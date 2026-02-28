@@ -409,7 +409,9 @@ export default function Schedule() {
                 <Table>
                   <TableHeader><TableRow><TableHead>Mês/Ano</TableHead><TableHead>Semana</TableHead><TableHead>Dia</TableHead><TableHead>Auditor</TableHead><TableHead>Setor</TableHead><TableHead>Checklist</TableHead></TableRow></TableHeader>
                   <TableBody>{missedAnalysis.allMissed.map(entry => {
-                    const emp = employees.find(e => e.id === entry.employeeId); const setor = sectors.find(s => s.id === entry.machineId); const ck = checklists.find(c => c.id === entry.checklistId);
+                    const emp = employees.find(e => e.id === entry.employeeId);
+                    const setor = sectors.find(s => s.id === entry.sectorId);
+                    const ck = checklists.find(c => c.id === entry.checklistId);
                     return (<TableRow key={entry.id}><TableCell>{MONTHS[entry.month]} {entry.year}</TableCell><TableCell>{entry.weekNumber}</TableCell><TableCell>{WEEK_DAYS.find(d => d.key === entry.dayOfWeek)?.label || '—'}</TableCell><TableCell>{emp?.name || 'N/A'}</TableCell><TableCell>{setor?.name || 'N/A'}</TableCell><TableCell>{ck?.name || 'N/A'}</TableCell></TableRow>);
                   })}</TableBody>
                 </Table>

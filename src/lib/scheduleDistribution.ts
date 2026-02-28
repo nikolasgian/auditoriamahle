@@ -195,6 +195,17 @@ export class AuditDistributor {
   /**
    * Get next checklist for auditor, ensuring no repeats in same week
    */
+  // normalize a checklist type string into the same id format used elsewhere in the app
+  // the original helper in store.ts replaces whitespace with '-' so we must match exactly
+  private normalizeChecklistId(type: string): string {
+    // lower case, replace spaces with hyphens, then strip any non-alphanumeric/hyphen
+    const base = type
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
+    return `ck-${base}`;
+  }
+
   private getNextChecklist(auditorId: string): { id: string; name: string } {
     const usedThisWeek = this.weeklyChecklistUsage.get(auditorId) || new Set();
     
@@ -207,14 +218,14 @@ export class AuditDistributor {
       const type = CHECKLIST_TYPES[0];
       usedThisWeek.add(type);
       this.weeklyChecklistUsage.set(auditorId, usedThisWeek);
-      return { id: `ck-${type.toLowerCase()}`, name: `Auditoria ${type}` };
+      return { id: this.normalizeChecklistId(type), name: `Auditoria ${type}` };
     }
     
     // Pick next
     const type = available[usedThisWeek.size % available.length];
     usedThisWeek.add(type);
     this.weeklyChecklistUsage.set(auditorId, usedThisWeek);
-    return { id: `ck-${type.toLowerCase()}`, name: `Auditoria ${type}` };
+    return { id: this.normalizeChecklistId(type), name: `Auditoria ${type}` };
   }
 
   /**

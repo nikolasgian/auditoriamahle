@@ -1,6 +1,6 @@
 // LPA Audit System - In-memory store with localStorage persistence
 
-import { AuditDistributor, DEFAULT_SECTORS, Sector } from './scheduleDistribution';
+import { AuditDistributor, DEFAULT_SECTORS } from './scheduleDistribution';
 import { SECTOR_CHECKLISTS } from './sectorChecklists';
 
 export interface Machine {
@@ -95,6 +95,11 @@ function save<T>(key: string, data: T) {
  * Ensure mandatory checklists exist
  * Creates them if missing
  */
+// normalize a checklist type/name into the canonical ID used in the system
+function normalizeChecklistId(type: string): string {
+  return `ck-${type.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`;
+}
+
 function ensureMandatoryChecklists(existing: Checklist[]): Checklist[] {
   const MANDATORY_TYPES = [
     'Processo',
@@ -111,7 +116,7 @@ function ensureMandatoryChecklists(existing: Checklist[]): Checklist[] {
 
   const toCreate = MANDATORY_TYPES.filter(type => !existingNames.has(type));
   const created = toCreate.map(type => ({
-    id: `ck-${type.toLowerCase().replace(/\s+/g, '-')}`,
+    id: normalizeChecklistId(type),
     name: type,
     category: type,
     createdAt: new Date().toISOString(),
@@ -260,7 +265,7 @@ function generateMockData() {
           month,
           year,
           employeeId: emp.id,
-          machineId: mach.id,
+          sectorId: mach.sector, // use machine sector name as fallback
           checklistId: ck.id,
           status: 'completed',
         });
@@ -311,7 +316,7 @@ function generateMockData() {
         month: d.getMonth(),
         year: d.getFullYear(),
         employeeId: emp.id,
-        machineId: mach.id,
+        sectorId: mach.sector,
         checklistId: ck.id,
         status: 'missed',
       });
@@ -330,7 +335,7 @@ function generateMockData() {
       month: now.getMonth(),
       year: now.getFullYear(),
       employeeId: emp.id,
-      machineId: mach.id,
+      sectorId: mach.sector,
       checklistId: ck.id,
       status: 'pending',
     });

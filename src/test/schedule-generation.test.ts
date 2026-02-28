@@ -133,4 +133,15 @@ describe('Schedule Distribution Engine - Fixed Pattern', () => {
     const uniqueOverride = [...new Set(entriesOverride.map(e => e.weekNumber))].sort((a, b) => a - b);
     expect(uniqueOverride).toEqual(overrideWeeks);
   });
+
+  it('generated schedule entries should refer to actual checklist IDs', () => {
+    // clear schedule and ensure mandatory checklists exist
+    store.saveSchedule([]);
+    // call generate once to populate checklists
+    const entries = store.generateSchedule(0, 2026);
+    const ckIds = new Set(store.getChecklists().map(c => c.id));
+    entries.forEach(e => {
+      expect(ckIds.has(e.checklistId)).toBe(true);
+    });
+  });
 });
