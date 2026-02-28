@@ -54,8 +54,8 @@ export default function MyAudits() {
         e.month === filterMonth
       );
       
-      // Also filter by week if selected
-      if (selectedWeek !== null) {
+      // Also filter by week if selected (ignore when 'all')
+      if (selectedWeek !== null && selectedWeek !== 'all') {
         const filterWeek = parseInt(selectedWeek);
         all = all.filter(e => e.weekNumber === filterWeek);
       }
@@ -200,10 +200,13 @@ export default function MyAudits() {
         </div>
         <div className="flex-1 min-w-[150px]">
           <label className="text-sm font-medium mb-2 block">Semana</label>
-          <Select value={selectedWeek || ''} onValueChange={(val) => setSelectedWeek(val || null)}>
+          <Select
+            value={selectedWeek || ''}
+            onValueChange={(val) => setSelectedWeek(val === 'all' ? null : val || null)}
+          >
             <SelectTrigger className="w-full"><SelectValue placeholder="Todas" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todas</SelectItem>
+              <SelectItem value="all">Todas</SelectItem>
               {availableWeeks.map(week => (
                 <SelectItem key={week} value={week.toString()}>
                   Semana {week}
